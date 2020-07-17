@@ -18,34 +18,27 @@ head(repdata)
 summary(repdata)
 ```
 
-2. Convert data into a data.table. 
-```{r}
-library(data.table)
-repdaily = as.data.table(repdata)
-```
-
 ## What is mean total number of steps taken per day?
 
-3. Calculate the total number of steps taken per day and assign to new data.frame.
+2. Calculate the total number of steps taken per day and assign to new data.frame.
 ```{r}
-repdailysum <- repdaily[, lapply(.SD, sum), by = date]
-head(repdailysum)
+repdailysum <- tapply(repdata$steps, repdata$date, FUN = sum, na.rm = TRUE)
 ```
 
-4. Plotting a Histogram of the total steps taken per day
+3. Plotting a Histogram of the total steps taken per day
 ```{r}
-hist(repdailysum$steps, ylim = c(0,12), xlim = c(0,25000), breaks = 20, xlab = "Steps Taken Per Day", main = "Histogram of Total Steps Taken Per Day" )
+hist(repdailysum, ylim = c(0,12), xlim = c(0,25000), breaks = 20, xlab = "Steps Taken Per Day", main = "Histogram of Total Steps Taken Per Day" )
 ```
 
-5. Calculating the mean and median.
+4. Calculating the mean and median.
 ```{r}
-meanstep <- mean(repdailysum$steps, na.rm = TRUE)
-medstep <- median(repdailysum$steps, na.rm = TRUE)
+meanstep <- mean(repdailysum, na.rm = TRUE)
+medstep <- median(repdailysum, na.rm = TRUE)
 ```
 The mean and median of the total number of steps taken per day are `r round(meanstep, 0)` and `r medstep` respectively.
 
 ## What is the average daily activity pattern?
-6. Using ggplot2 package to plot.
+5. Using ggplot2 package to plot.
 ```{r}
 library(ggplot2)
 avgsteps <- aggregate(x=list(steps=repdata$steps), by=list(interval=repdata$interval),
@@ -56,7 +49,7 @@ ggplot(data=avgsteps, aes(x=interval, y=steps)) +
     ylab("Average Number Of Steps Taken")
 ```
 
-7. Find the 5-min interval with maximum number of steps.
+6. Find the 5-min interval with maximum number of steps.
 ```{r}
 avgsteps[which.max(avgsteps$steps),]
 ```
